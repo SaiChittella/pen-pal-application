@@ -114,10 +114,11 @@
 		@apply bg-background text-foreground;
 	}
 }
-
+F
 .baloo-2 {
 	font-family: "Baloo 2", serif;
 	font-optical-sizing: auto;
 	font-weight: 700;
 	font-style: normal;
 }
+

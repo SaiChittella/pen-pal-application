@@ -94,7 +94,7 @@ export default function ChatPage() {
 								</AvatarFallback>
 							</Avatar>
 							<div className="flex-1 min-w-0">
-								<p className="text-sm baloo-2 font-medium text-gray-900 truncate">
+								<p className="text-md baloo-2 font-bold text-gray-900 truncate">
 									{partner.name}
 								</p>
 								<p className="text-sm baloo-2 text-gray-500 truncate">
@@ -177,7 +177,7 @@ export default function ChatPage() {
 							>
 								{!message.isSent && (
 									<div>
-										<p className="text-sm mb-2 text-blue-600 font-bold baloo-2">
+										<p className="text-md mb-2 text-blue-600 font-bold baloo-2">
 											{message.sender}
 										</p>
 									</div>
@@ -194,9 +194,9 @@ export default function ChatPage() {
 					))}
 				</div>
 
-				<Card className="m-4 p-4 flex items-center space-x-2 focus:outline-none  bg-[#eeeff9]">
+				<div className="flex flex-row space-x-1 items-center mb-5">
 					<Input
-						className="flex-1 border-0 focus:outline-none baloo-2 "
+						className="baloo-2 bg-[#eeeff9] items-center p-7"
 						placeholder="Your message"
 					/>
 					<Button size="icon" variant="ghost">
@@ -205,7 +205,7 @@ export default function ChatPage() {
 					<Button variant="ghost" size="icon">
 						<Mic className="h-8 w-8 text-blue-500" />
 					</Button>
-				</Card>
+				</div>
 			</div>
 		</div>
 	);
