@@ -23,6 +23,7 @@ export default function LoginPage() {
 			const res = await signInWithEmailAndPassword(email, password);
 			sessionStorage.setItem("user", "true");
 
+
 			const data = {
 				email: email,
 			};

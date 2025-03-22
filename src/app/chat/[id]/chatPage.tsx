@@ -4,10 +4,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
-import { Mic, Send, MoreVertical, ChevronLeft, Languages } from "lucide-react";
+import { Mic, Send, MoreVertical, Languages } from "lucide-react";
 import { Search } from "lucide-react";
 import Link from "next/link";
+import { Message } from "@/app/actions/getMessages";
+import { User } from "@/app/actions/users";
+import { sendMessage } from "@/app/actions/sendMessage";
 
 const chatPartners = [
 	{
@@ -30,40 +32,39 @@ const chatPartners = [
 	},
 ];
 
-const messages = [
-	{
-		id: 1,
-		sender: "Sophie Martin",
-		content: "Bonjour! Comment ça va?",
-		timestamp: "10:30 AM",
-		isSent: false,
-	},
-	{
-		id: 2,
-		sender: "You",
-		content: "Ça va bien, merci! Et toi?",
-		timestamp: "10:32 AM",
-		isSent: true,
-	},
-	{
-		id: 3,
-		sender: "Sophie Martin",
-		content: "Je vais très bien aussi. Que fais-tu aujourd'hui?",
-		timestamp: "10:33 AM",
-		isSent: false,
-	},
-	{
-		id: 4,
-		sender: "You",
-		content:
-			"Je travaille sur un projet de programmation. C'est très intéressant!",
-		timestamp: "10:35 AM",
-		isSent: true,
-	},
-];
+interface ChatPageProps {
+	messages: Message[] | undefined;
+	currentUser: User | undefined;
+	receiverUser: User | undefined;
+	id: string;
+}
 
-export default function ChatPage() {
+export default function ChatPageUI({
+	messages,
+	currentUser,
+	receiverUser,
+	id,
+}: ChatPageProps) {
 	const [translateMode, setTranslateMode] = useState(false);
+
+	const [message, setMessage] = useState("");
+
+	const handleSubmit = async () => {
+		const result = await sendMessage(
+			message,
+			currentUser?.name,
+			currentUser?.email,
+			receiverUser?.name,
+			receiverUser?.email,
+			id
+		);
+
+		if (result.success) {
+			setMessage("");
+		} else {
+			console.error("Failed to send the message");
+		}
+	};
 
 	return (
 		<div className="flex h-screen bg-white">
@@ -77,31 +78,30 @@ export default function ChatPage() {
 						/>
 					</div>
 					{chatPartners.map((partner) => (
-						<div
-							key={partner.id}
-							className="flex items-center space-x-4 mb-4 p-2 hover:bg-blue-200 rounded-lg cursor-pointer"
-						>
-							<Avatar>
-								<AvatarImage
-									src={partner.avatar}
-									alt={partner.name}
-								/>
-								<AvatarFallback>
-									{partner.name
-										.split(" ")
-										.map((n) => n[0])
-										.join("")}
-								</AvatarFallback>
-							</Avatar>
-							<div className="flex-1 min-w-0">
-								<p className="text-md baloo-2 font-bold text-gray-900 truncate">
-									{partner.name}
-								</p>
-								<p className="text-sm baloo-2 text-gray-500 truncate">
-									{partner.lastMessage}
-								</p>
+						<Link href={`/chat/${partner.id}`} key={partner.id}>
+							<div className="flex items-center space-x-4 mb-4 p-2 hover:bg-blue-200 rounded-lg cursor-pointer">
+								<Avatar>
+									<AvatarImage
+										src={partner.avatar}
+										alt={partner.name}
+									/>
+									<AvatarFallback>
+										{partner.name
+											.split(" ")
+											.map((n) => n[0])
+											.join("")}
+									</AvatarFallback>
+								</Avatar>
+								<div className="flex-1 min-w-0">
+									<p className="text-md baloo-2 font-bold text-gray-900 truncate">
+										{partner.name}
+									</p>
+									<p className="text-sm baloo-2 text-gray-500 truncate">
+										{partner.lastMessage}
+									</p>
+								</div>
 							</div>
-						</div>
+						</Link>
 					))}
 				</div>
 			</div>
@@ -145,22 +145,21 @@ export default function ChatPage() {
 				</div>
 
 				<div className="flex-1 overflow-y-auto p-4 space-y-4">
-					{messages.map((message) => (
+					{messages?.map((message) => (
 						<div
 							key={message.id}
 							className={`flex ${
-								message.isSent ? "justify-end" : "justify-start"
+								message.senderEmail == currentUser?.email
+									? "justify-end"
+									: "justify-start"
 							}`}
 						>
-							{!message.isSent && (
+							{message.senderEmail != currentUser?.email && (
 								<div className="mr-2 relative top-14">
 									<Avatar>
-										<AvatarImage
-											src={chatPartners[0].avatar}
-											alt={chatPartners[0].name}
-										/>
+										<AvatarImage alt={receiverUser?.name} />
 										<AvatarFallback>
-											{chatPartners[0].name
+											{receiverUser?.name
 												.split(" ")
 												.map((n) => n[0])
 												.join("")}
@@ -170,12 +169,12 @@ export default function ChatPage() {
 							)}
 							<div
 								className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl ${
-									message.isSent
+									message.senderEmail == currentUser?.email
 										? "bg-blue-500 text-white"
 										: "bg-[#eeeff9]"
 								} rounded-lg p-3 shadow`}
 							>
-								{!message.isSent && (
+								{message.senderEmail != currentUser?.email && (
 									<div>
 										<p className="text-md mb-2 text-blue-600 font-bold baloo-2">
 											{message.sender}
@@ -187,7 +186,9 @@ export default function ChatPage() {
 									{message.content}
 								</p>
 								<p className="text-xs text-right mt-1 opacity-70 baloo-2">
-									{message.timestamp}
+									{new Date(
+										message.timestamp
+									).toLocaleString()}
 								</p>
 							</div>
 						</div>
@@ -198,8 +199,10 @@ export default function ChatPage() {
 					<Input
 						className="baloo-2 bg-[#eeeff9] items-center p-7"
 						placeholder="Your message"
+						value={message}
+						onChange={(e) => setMessage(e.target.value)}
 					/>
-					<Button size="icon" variant="ghost">
+					<Button size="icon" variant="ghost" onClick={handleSubmit}>
 						<Send className="h-8 w-8 text-blue-500" />
 					</Button>
 					<Button variant="ghost" size="icon">

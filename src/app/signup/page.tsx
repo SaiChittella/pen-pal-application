@@ -66,7 +66,7 @@ export default function SignupPage() {
 						Sign up to start your language journey today
 					</p>
 				</div>
-				L
+
 				{/* TODO: Have a form instead of 10 Input Statements that retreives an object of the values the user passes in */}
 				<Card className="mt-8 shadow-lg border-t-4 border-blue-600">
 					<CardContent className="space-y-4 pt-6">

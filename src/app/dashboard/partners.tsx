@@ -28,23 +28,16 @@ export default function FindPartners({
 		(() => void) | null
 	>(null);
 
-	const matchedUserIds = new Set(matches?.map((match) => match.id));
+	const matchedUserIds = new Set(
+		matches?.map((match) => match.users.map((user: any) => user.id))
+	);
 
-	console.log(matchedUserIds);
+	console.log("Matched User Ids: " + matchedUserIds);
 
 	const handleConnect = async (targetUser: User) => {
-		const result = await setMatches(
-			{ currentUser, targetUser },
-			false,
-			false
-		);
-		const result2 = await setMatches(
-			{ currentUser, targetUser },
-			true,
-			true
-		);
+		const result = await setMatches({ currentUser, targetUser }, true);
 
-		if (!result.success || !result2.success) {
+		if (!result.success) {
 			// TODO: Display a popup with the error message
 			console.log("Error populating matches. " + targetUser.id);
 		}
@@ -61,6 +54,7 @@ export default function FindPartners({
 	return (
 		<div>
 			<div>
+				{/* TODO: Need to implement functionality to not display matches that have already been made */}
 				{users
 					.filter((user) => !matchedUserIds.has(user.id))
 					.map((user) => (

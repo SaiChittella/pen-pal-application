@@ -231,17 +231,26 @@ export default function DashboardUI({ users, matches }: DashboardUIProps) {
 								<div className="space-y-4">
 									{matches?.map((match) => (
 										<Link
-											href="/chat"
-											key={match.id}
+											href={`/chat/${match.id}`}
+											key={
+												match.users[0].id ==
+												currentUser?.id
+													? match.users[1].id
+													: match.users[0].id
+											}
 											className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-100"
 										>
 											<Avatar>
 												<AvatarImage
 													src="/placeholder.svg?height=40&width=40"
-													alt={match.matchedUser.name}
+													alt={match.users[0].name}
 												/>
 												<AvatarFallback>
-													{match.matchedUser.name
+													{(match.users[0].name ==
+													currentUser?.name
+														? match.users[1].name
+														: match.users[0].name
+													)
 														.split(" ")
 														.map(
 															(n: string) => n[0]
@@ -251,8 +260,13 @@ export default function DashboardUI({ users, matches }: DashboardUIProps) {
 											</Avatar>
 											<div className="flex-1 min-w-0">
 												<p className="text-sm font-medium text-gray-900 truncate">
-													{match.matchedUser.name}
+													{match.users[0].name ==
+													currentUser?.name
+														? match.users[1].name
+														: match.users[0].name}
 												</p>
+
+												{/* TODO: Don't think this will correctly pull from the last message of the user */}
 												<p className="text-sm text-gray-500 truncate">
 													{match.lastMessage ||
 														"No messages yet"}
