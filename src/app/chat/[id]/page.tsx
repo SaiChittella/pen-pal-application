@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/app/actions/getMatches";
 import { getReceiver } from "@/app/actions/getReceiver";
 
 export default async function ChatPage({ params }: { params: { id: string } }) {
-	const { id } = await params;
+	const { id } = params;
 
 	const resultMessages = await getMessages(id);
 
