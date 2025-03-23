@@ -1,17 +1,16 @@
 "use server";
 import { database } from "@/app/firebase/config";
-import { ref, get, push } from "firebase/database";
+import { ref, get } from "firebase/database";
 import { User } from "./users";
 
 export interface Match extends User {
-	lastMessage: String;
+	lastMessage: string;
 }
 
 export async function getMatches(usersArr: User[]) {
 	try {
 		const response = await getCurrentUser();
 
-		// TODO: Actually implement using a For Loop
 		const currentUserData = usersArr.find(
 			(u) => u.email === response?.data.email
 		);
@@ -24,11 +23,11 @@ export async function getMatches(usersArr: User[]) {
 			const matchesArray = Object.entries(snapshot.val()).map(
 				([id, data]) => ({
 					id,
-					...(data as Object),
+					...(data as object),
 				})
 			);
 
-			let filteredArray = [];
+			const filteredArray = [];
 
 			for (let i = 0; i < (matchesArray as Match[]).length; i++) {
 				if (

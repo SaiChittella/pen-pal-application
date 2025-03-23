@@ -22,7 +22,7 @@ export async function getUsers() {
 			const usersArray = Object.entries(snapshot.val()).map(
 				([id, data]) => ({
 					id,
-					...(data as Object),
+					...(data as object),
 				})
 			);
 			return { success: true, data: usersArray as User[] };

@@ -1,19 +1,16 @@
 "use server";
 
 import { database } from "@/app/firebase/config";
-import { ref, set, update, push } from "firebase/database";
+import { ref, set, push } from "firebase/database";
 import { User } from "./users";
 import { revalidatePath } from "next/cache";
 
 interface MatchData {
-	currentUser: User | undefined;
+	currentUser: User;
 	targetUser: User;
 }
 
-export async function setMatches(
-	matchData: MatchData,
-	revalidate: boolean
-) {
+export async function setMatches(matchData: MatchData, revalidate: boolean) {
 	try {
 		const matchesRef = ref(database, "matches");
 		const newDataRef = push(matchesRef);

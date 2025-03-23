@@ -9,6 +9,15 @@ import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth } from "@/app/firebase/config";
 import { createUserInDatabase } from "@/app/actions/auth";
 import { useRouter } from "next/navigation";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+	SelectGroup,
+	SelectLabel,
+} from "@/components/ui/select";
 
 export default function SignupPage() {
 	const [email, setEmail] = useState("");
@@ -25,7 +34,22 @@ export default function SignupPage() {
 
 	const handleSignUp = async () => {
 		try {
-			// TODO: Figure out how to get response from the user + set the current user with it to remove the clunky search in database for the current user.
+			if (!email.trim() || !email.includes("@")) {
+				alert("Please enter a valid email address.");
+				return;
+			}
+
+			if (
+				email.length == 0 ||
+				name.length == 0 ||
+				password.length == 0 ||
+				languageLearning === "" ||
+				nativeLanguage == ""
+			) {
+				alert("Please fill out all the fields!");
+				return;
+			}
+
 			const res = await createUserWithEmailAndPassword(email, password);
 			sessionStorage.setItem("user", "true");
 
@@ -47,10 +71,10 @@ export default function SignupPage() {
 
 				router.push("/login");
 			} else {
-				console.error("Failed to create user in database");
+				alert("Failed to create user in database");
 			}
 		} catch (e) {
-			console.error(e);
+			alert("Something went wrong: " + e);
 		}
 	};
 
@@ -67,7 +91,6 @@ export default function SignupPage() {
 					</p>
 				</div>
 
-				{/* TODO: Have a form instead of 10 Input Statements that retreives an object of the values the user passes in */}
 				<Card className="mt-8 shadow-lg border-t-4 border-blue-600">
 					<CardContent className="space-y-4 pt-6">
 						<div className="space-y-2">
@@ -107,33 +130,23 @@ export default function SignupPage() {
 						</div>
 
 						<div className="space-y-2">
-							<Input
-								type="password"
-								placeholder="Re-ype your password"
-								className="rounded-lg"
-							/>
+							<Select
+								onValueChange={(value) =>
+									setNativeLanguage(value)
+								}
+							>
+								<SelectLanguage placeHolderText="What is your native language?" />
+							</Select>
 						</div>
 
 						<div className="space-y-2">
-							<Input
-								type="text"
-								placeholder="What is your native/proficient language?"
-								className="rounded-lg"
-								onChange={(e) =>
-									setNativeLanguage(e.target.value)
+							<Select
+								onValueChange={(value) =>
+									setLanguageLearning(value)
 								}
-							/>
-						</div>
-
-						<div className="space-y-2">
-							<Input
-								type="text"
-								placeholder="What language are you trying to learn?"
-								className="rounded-lg"
-								onChange={(e) =>
-									setLanguageLearning(e.target.value)
-								}
-							/>
+							>
+								<SelectLanguage placeHolderText="What is the language you are learning?" />
+							</Select>
 						</div>
 					</CardContent>
 					<CardFooter className="flex flex-col space-y-4 pt-6">
@@ -142,13 +155,6 @@ export default function SignupPage() {
 							onClick={handleSignUp}
 						>
 							Sign Up
-						</Button>
-						<Button className="w-full bg-white hover:bg-gray-100 text-black rounded-lg">
-							<img
-								src="/google.svg"
-								className="w-6 h-6 mr-2"
-							></img>
-							Sign up with Google
 						</Button>
 						<div className="text-sm text-center text-gray-600">
 							Already have an account?{" "}
@@ -162,6 +168,26 @@ export default function SignupPage() {
 					</CardFooter>
 				</Card>
 			</div>
+		</div>
+	);
+}
+
+function SelectLanguage({ placeHolderText }: { placeHolderText: string }) {
+	return (
+		<div>
+			<SelectTrigger className="w-full">
+				<SelectValue placeholder={placeHolderText} />
+			</SelectTrigger>
+			<SelectContent>
+				<SelectGroup>
+					<SelectLabel>Language</SelectLabel>
+					<SelectItem value="en">English</SelectItem>
+					<SelectItem value="fr">French</SelectItem>
+					<SelectItem value="es">Spanish</SelectItem>
+					<SelectItem value="ge">German</SelectItem>
+					<SelectItem value="id">Indonesian</SelectItem>
+				</SelectGroup>
+			</SelectContent>
 		</div>
 	);
 }

@@ -9,6 +9,7 @@ import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth } from "@/app/firebase/config";
 import { useRouter } from "next/navigation";
 import { createCurrentUser } from "@/app/actions/currentUser";
+import { LoaderCircle } from "lucide-react";
 
 export default function LoginPage() {
 	const [email, setEmail] = useState("");
@@ -16,13 +17,28 @@ export default function LoginPage() {
 
 	const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
 
+	const [loading, setLoading] = useState(false);
+
 	const router = useRouter();
 
 	const handleLogin = async () => {
 		try {
-			const res = await signInWithEmailAndPassword(email, password);
-			sessionStorage.setItem("user", "true");
+			if (!email.trim() || !email.includes("@")) {
+				alert("Please enter a valid email address.");
+				return;
+			}
+			if (email.length == 0 || password.length == 0) {
+				alert("Please fill out all the fields!");
+				return;
+			}
 
+			setLoading(true);
+
+			const res = await signInWithEmailAndPassword(email, password);
+
+			if (typeof window !== "undefined") {
+				sessionStorage.setItem("user", "true");
+			}
 
 			const data = {
 				email: email,
@@ -73,47 +89,27 @@ export default function LoginPage() {
 								onChange={(e) => setPassword(e.target.value)}
 							/>
 						</div>
-						<div className="flex items-center justify-between">
-							<div className="flex items-center">
-								<input
-									id="remember-me"
-									name="remember-me"
-									type="checkbox"
-									className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
-								/>
-								<label
-									htmlFor="remember-me"
-									className="ml-2 block text-sm text-gray-900"
-								>
-									Remember me
-								</label>
-							</div>
-							<div className="text-sm">
-								<Link
-									href="/forgot-password"
-									className="font-medium underline text-blue-700 hover:text-blue-600"
-								>
-									Forgot your password?
-								</Link>
-							</div>
-						</div>
 					</CardContent>
 					<CardFooter className="flex flex-col space-y-4 pt-6">
 						<Button
-							className="w-full bg-blue-600 hover:bg-blue-700 rounded-lg"
+							className={`w-full rounded-lg ${
+								loading
+									? "bg-gray-400 cursor-not-allowed"
+									: "bg-blue-600 hover:bg-blue-700"
+							}`}
 							onClick={handleLogin}
+							disabled={loading}
 						>
-							Sign In
-						</Button>
-						<Button className="w-full bg-white hover:bg-gray-100 text-black rounded-lg">
-							<img
-								src="/google.svg"
-								className="w-6 h-6 mr-2"
-							></img>
-							Sign in with Google
+							{loading ? (
+								<div className="flex items-center justify-center">
+									<LoaderCircle />
+								</div>
+							) : (
+								"Sign In"
+							)}
 						</Button>
 						<div className="text-sm text-center text-gray-600">
-							Don't have an account?{" "}
+							Don&apost have an account?{" "}
 							<Link
 								href="/signup"
 								className="font-medium underline text-blue-700 hover:text-blue-600"

@@ -1,9 +1,8 @@
 "use server";
 
 import { database } from "@/app/firebase/config";
-import { ref, set, push } from "firebase/database";
+import { ref, set } from "firebase/database";
 import { getUsers } from "./users";
-import { User } from "./users";
 
 interface CurrentUserData {
 	email: string;

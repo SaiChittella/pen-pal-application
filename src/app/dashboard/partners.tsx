@@ -8,10 +8,10 @@ import { Match } from "@/app/actions/getMatches";
 import { setMatches } from "@/app/actions/createMatches";
 
 interface FindPartnersProps {
-	users: User[] | undefined;
-	searchingLanguage: String | undefined | null;
-	currentUser: User | undefined;
-	matches: Match[] | undefined;
+	users: User[];
+	searchingLanguage: string;
+	currentUser: User;
+	matches: Match[];
 }
 
 export default function FindPartners({
@@ -20,28 +20,11 @@ export default function FindPartners({
 	currentUser,
 	matches,
 }: FindPartnersProps) {
-	if (!users || users.length === 0) return null;
-
 	const [expandedPartner, setExpandedPartner] = useState<string | null>(null);
 
 	const [unsubscribeListener, setUnsubscribeListener] = useState<
 		(() => void) | null
 	>(null);
-
-	const matchedUserIds = new Set(
-		matches?.map((match) => match.users.map((user: any) => user.id))
-	);
-
-	console.log("Matched User Ids: " + matchedUserIds);
-
-	const handleConnect = async (targetUser: User) => {
-		const result = await setMatches({ currentUser, targetUser }, true);
-
-		if (!result.success) {
-			// TODO: Display a popup with the error message
-			console.log("Error populating matches. " + targetUser.id);
-		}
-	};
 
 	useEffect(() => {
 		return () => {
@@ -51,10 +34,23 @@ export default function FindPartners({
 		};
 	}, [unsubscribeListener]);
 
+	if (!users || users.length === 0) return null;
+
+	const matchedUserIds = new Set(
+		matches?.flatMap((match) => match.users.map((user: User) => user.id))
+	);
+
+	const handleConnect = async (targetUser: User) => {
+		const result = await setMatches({ currentUser, targetUser }, true);
+
+		if (!result.success) {
+			console.log("Error populating matches. " + targetUser.id);
+		}
+	};
+
 	return (
 		<div>
 			<div>
-				{/* TODO: Need to implement functionality to not display matches that have already been made */}
 				{users
 					.filter((user) => !matchedUserIds.has(user.id))
 					.map((user) => (

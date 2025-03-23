@@ -1,22 +1,21 @@
 "use server";
 import { database } from "@/app/firebase/config";
-import { ref, get, query, orderByChild } from "firebase/database";
+import { ref, get } from "firebase/database";
 
 export interface Message {
 	id: string;
 	sender: string;
 	senderEmail: string;
-	content: string;
+	senderTranslation: string;
 	timestamp: string;
 	receiver: string;
 	receiverEmail: string;
+	receiverTranslation: string;
 }
 
 export async function getMessages(paramId: string) {
 	try {
 		const messagesRef = ref(database, `matches/${paramId}/messages`);
-
-		// const queryRef = query(messagesRef, orderByChild("timestamp"));
 
 		const snapshot = await get(messagesRef);
 
@@ -24,7 +23,7 @@ export async function getMessages(paramId: string) {
 			const messagesArray = Object.entries(snapshot.val()).map(
 				([id, data]) => ({
 					id,
-					...(data as Object),
+					...(data as object),
 				})
 			);
 
