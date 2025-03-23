@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/app/firebase/config";
+import { auth, database } from "@/app/firebase/config";
 import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -30,6 +30,7 @@ import FindPartners from "@/app/dashboard/partners";
 import { updateUserInDatabase } from "../actions/auth";
 import { useToast } from "@/hooks/use-toast";
 import { ChevronUp } from "lucide-react";
+import { ref, remove } from "firebase/database";
 
 interface DashboardUIProps {
 	users: User[];
@@ -147,12 +148,6 @@ export default function DashboardUI({
 										>
 											Account
 										</TabsTrigger>
-										<TabsTrigger
-											value="password"
-											className="Baloo-2"
-										>
-											Password
-										</TabsTrigger>
 									</TabsList>
 
 									<TabsContent value="account">
@@ -202,49 +197,6 @@ export default function DashboardUI({
 													onClick={handleUpdates}
 												>
 													Save changes
-												</Button>
-												<Button
-													variant="destructive"
-													className="Baloo-2"
-												>
-													Delete my account
-												</Button>
-											</CardFooter>
-										</Card>
-									</TabsContent>
-									<TabsContent value="password">
-										<Card>
-											<CardHeader>
-												<CardTitle>Password</CardTitle>
-												<CardDescription>
-													Change your password here.
-													After saving, you&apos;ll be
-													logged out.
-												</CardDescription>
-											</CardHeader>
-											<CardContent className="space-y-2">
-												<div className="space-y-1">
-													<Label htmlFor="current">
-														Current password
-													</Label>
-													<Input
-														id="current"
-														type="password"
-													/>
-												</div>
-												<div className="space-y-1">
-													<Label htmlFor="new">
-														New password
-													</Label>
-													<Input
-														id="new"
-														type="password"
-													/>
-												</div>
-											</CardContent>
-											<CardFooter>
-												<Button className="bg-blue-500 hover:bg-blue-600 Baloo-2">
-													Save password
 												</Button>
 											</CardFooter>
 										</Card>
