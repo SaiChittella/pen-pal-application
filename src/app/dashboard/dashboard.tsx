@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, database } from "@/app/firebase/config";
+import { auth } from "@/app/firebase/config";
 import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -28,9 +28,7 @@ import { User } from "@/app/actions/users";
 import { Match } from "@/app/actions/getMatches";
 import FindPartners from "@/app/dashboard/partners";
 import { updateUserInDatabase } from "../actions/auth";
-import { useToast } from "@/hooks/use-toast";
 import { ChevronUp } from "lucide-react";
-import { ref, remove } from "firebase/database";
 
 interface DashboardUIProps {
 	users: User[];
@@ -49,10 +47,6 @@ export default function DashboardUI({
 	const [showNewPartners, setShowNewPartners] = useState(false);
 	const [showProfile, setShowProfile] = useState(false);
 
-	const [unsubscribeListener, setUnsubscribeListener] = useState<
-		(() => void) | null
-	>(null);
-
 	const [currentUser, setCurrentUser] = useState<User>({
 		id: "",
 		name: "",
@@ -67,7 +61,6 @@ export default function DashboardUI({
 
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const { toast } = useToast();
 
 	const handleUpdates = async () => {
 		const result = await updateUserInDatabase(
@@ -77,11 +70,7 @@ export default function DashboardUI({
 		);
 
 		if (!result.success) {
-			console.error("Failed to update user information");
-			toast({
-				title: "Erorr, failed to send Message.",
-				description: "Something went wrong... please try again later",
-			});
+			alert("Failed to update user information");
 		}
 
 		setupdateEmail("");
@@ -109,14 +98,6 @@ export default function DashboardUI({
 	const handleFindPartners = () => {
 		setShowNewPartners(true);
 	};
-
-	useEffect(() => {
-		return () => {
-			if (unsubscribeListener) {
-				unsubscribeListener();
-			}
-		};
-	}, [unsubscribeListener]);
 
 	return (
 		<div className="min-h-screen bg-gray-100">

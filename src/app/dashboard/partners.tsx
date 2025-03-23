@@ -22,18 +22,6 @@ export default function FindPartners({
 }: FindPartnersProps) {
 	const [expandedPartner, setExpandedPartner] = useState<string | null>(null);
 
-	const [unsubscribeListener, setUnsubscribeListener] = useState<
-		(() => void) | null
-	>(null);
-
-	useEffect(() => {
-		return () => {
-			if (unsubscribeListener) {
-				unsubscribeListener();
-			}
-		};
-	}, [unsubscribeListener]);
-
 	if (!users || users.length === 0) return null;
 
 	const matchedUserIds = new Set(

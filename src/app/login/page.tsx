@@ -34,7 +34,7 @@ export default function LoginPage() {
 
 			setLoading(true);
 
-			const res = await signInWithEmailAndPassword(email, password);
+			await signInWithEmailAndPassword(email, password);
 
 			if (typeof window !== "undefined") {
 				sessionStorage.setItem("user", "true");

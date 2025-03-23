@@ -50,7 +50,7 @@ export default function SignupPage() {
 				return;
 			}
 
-			const res = await createUserWithEmailAndPassword(email, password);
+			await createUserWithEmailAndPassword(email, password);
 			sessionStorage.setItem("user", "true");
 
 			const result = await createUserInDatabase({
