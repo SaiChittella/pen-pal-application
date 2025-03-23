@@ -25,7 +25,7 @@ export async function createCurrentUser(currentUserData: CurrentUserData) {
 		}
 		return { success: true };
 	} catch (error) {
-		console.error("Error creating current user in database:", error);
+		alert("Error creating current user in database: " + error);
 		return { success: false, error };
 	}
 }

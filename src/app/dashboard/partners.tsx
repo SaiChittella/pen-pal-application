@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { User } from "@/app/actions/users";
 import { Match } from "@/app/actions/getMatches";
 import { setMatches } from "@/app/actions/createMatches";
