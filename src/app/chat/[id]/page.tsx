@@ -4,13 +4,13 @@ import { getCurrentUser } from "@/app/actions/getMatches";
 import { getReceiver } from "@/app/actions/getReceiver";
 
 interface ChatPageProps {
-	params: {
+	params: Promise<{
 		id: string;
-	};
+	}>;
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
-	const { id } = params;
+	const { id } = await params;
 
 	const resultMessages = await getMessages(id);
 
