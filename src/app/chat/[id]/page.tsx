@@ -3,7 +3,13 @@ import ChatPageUI from "./chatPage";
 import { getCurrentUser } from "@/app/actions/getMatches";
 import { getReceiver } from "@/app/actions/getReceiver";
 
-export default async function ChatPage({ params }: { params: { id: string } }) {
+interface ChatPageProps {
+	params: {
+		id: string;
+	};
+}
+
+export default async function ChatPage({ params }: ChatPageProps) {
 	const { id } = params;
 
 	const resultMessages = await getMessages(id);
@@ -20,7 +26,7 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
 	}
 
 	if (!resultMessages.data || !currentUser?.data || !receiverUser?.data) {
-		return <div>Error retreiving data</div>;
+		return <div>Error retrieving data</div>;
 	}
 
 	return (
