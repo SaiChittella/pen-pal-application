@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-import { User } from "@/app/actions/users";
-import { Match } from "@/app/actions/getMatches";
-import { setMatches } from "@/app/actions/createMatches";
+import { User } from "@/app/_actions/users";
+import { Match } from "@/app/_actions/getMatches";
+import { setMatches } from "@/app/_actions/createMatches";
 
 interface FindPartnersProps {
 	users: User[];

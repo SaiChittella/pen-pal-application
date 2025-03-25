@@ -1,11 +1,11 @@
 "use server";
-import { database } from "@/app/firebase/config";
+import { database } from "@/lib/firebase/config";
 import { ref, get } from "firebase/database";
 import { User } from "./users";
 
 export async function getReceiver(
 	paramId: string,
-	currentUser: User | undefined
+	currentUserEmail: string | undefined
 ) {
 	try {
 		const matchesRef = ref(database, `matches/${paramId}/users`);
@@ -20,7 +20,7 @@ export async function getReceiver(
 			);
 
 			const receiver = (usersArray as User[]).find(
-				(u) => u.email !== currentUser?.email
+				(u) => u.email !== currentUserEmail
 			);
 
 			return { success: true, data: receiver as User };

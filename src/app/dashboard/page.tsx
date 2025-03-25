@@ -1,7 +1,9 @@
-import { getUsers } from "@/app/actions/users";
-import { getMatches, getCurrentUser } from "@/app/actions/getMatches";
-import { getMessages } from "@/app/actions/getMessages";
+import { getUsers } from "@/app/_actions/users";
+import { getMatches } from "@/app/_actions/getMatches";
+import { getMessages } from "@/app/_actions/getMessages";
 import DashboardUI from "@/app/dashboard/dashboard";
+import { getCurrentUser } from "@/lib/firebase/firebase-admin";
+import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
 	const resultUsers = await getUsers();
@@ -10,17 +12,28 @@ export default async function Dashboard() {
 		return <div>Error</div>;
 	}
 
+	const currentUserAuth = await getCurrentUser();
+	if (!currentUserAuth) {
+		redirect("/login");
+	}
+
+	const currentUserData = resultUsers.data.find(
+		(u) => u.email === currentUserAuth.email
+	);
+
+	if (!currentUserData) {
+		redirect("/login");
+	}
+
 	const resultMatches = await getMatches(resultUsers.data);
-	const currentUser = await getCurrentUser();
 
 	let messageCount = 0;
 
-	if (resultMatches?.data) {
+	if (resultMatches?.data && currentUserData) {
 		for (let i = 0; i < resultMatches.data.length; i++) {
 			if (
-				resultMatches.data[i].users[0].email ==
-					currentUser?.data.email ||
-				resultMatches.data[i].users[1].email == currentUser?.data.email
+				resultMatches.data[i].users[0].email == currentUserData.email ||
+				resultMatches.data[i].users[1].email == currentUserData.email
 			) {
 				if (resultMatches.data[i].messages) {
 					const messages = await getMessages(
@@ -34,8 +47,11 @@ export default async function Dashboard() {
 		}
 	}
 
-
-	if (!resultUsers.success || !resultMatches?.success || resultMatches?.data === undefined) {
+	if (
+		!resultUsers.success ||
+		!resultMatches?.success ||
+		resultMatches?.data === undefined
+	) {
 		alert("Failed to fetch users");
 	} else {
 		return (

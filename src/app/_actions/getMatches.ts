@@ -1,7 +1,8 @@
 "use server";
-import { database } from "@/app/firebase/config";
+import { database } from "@/lib/firebase/config";
 import { ref, get } from "firebase/database";
 import { User } from "./users";
+import { getCurrentUser } from "@/lib/firebase/firebase-admin";
 
 export interface Match extends User {
 	lastMessage: string;
@@ -10,10 +11,13 @@ export interface Match extends User {
 export async function getMatches(usersArr: User[]) {
 	try {
 		const response = await getCurrentUser();
+		let currentUserData;
 
-		const currentUserData = usersArr.find(
-			(u) => u.email === response?.data.email
-		);
+		if (response) {
+			currentUserData = usersArr.find(
+				(u) => u.email === response?.email
+			);
+		}
 
 		const matchesRef = ref(database, `matches`);
 
@@ -47,23 +51,5 @@ export async function getMatches(usersArr: User[]) {
 	} catch (error) {
 		console.error("Error fetching matches: ", error);
 		return { success: false, error };
-	}
-}
-
-export async function getCurrentUser() {
-	try {
-		const currentUserRef = ref(database, "currentUser/user");
-		const snapshot = await get(currentUserRef);
-
-		if (snapshot.exists()) {
-			const data = snapshot.val();
-
-			return {
-				success: true,
-				data: { id: snapshot.key, ...data } as User,
-			};
-		}
-	} catch (error) {
-		console.error("Could not get the current User: " + error);
 	}
 }

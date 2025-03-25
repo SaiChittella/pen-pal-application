@@ -6,9 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Globe } from "lucide-react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth } from "@/app/firebase/config";
+import { auth } from "@/lib/firebase/config";
 import { useRouter } from "next/navigation";
-import { createCurrentUser } from "@/app/actions/currentUser";
 import { LoaderCircle } from "lucide-react";
 
 export default function LoginPage() {
@@ -34,28 +33,33 @@ export default function LoginPage() {
 
 			setLoading(true);
 
-			await signInWithEmailAndPassword(email, password);
+			const res = await signInWithEmailAndPassword(email, password);
 
-			if (typeof window !== "undefined") {
-				sessionStorage.setItem("user", "true");
+			const idToken = await res?.user.getIdToken();
+
+			const response = await fetch("/api/auth/login", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ idToken }),
+			});
+
+			const resBody = await response.json();
+
+			if (!resBody.success) {
+				alert("Login failed: " + resBody.error);
+				setLoading(false);
+				return;
 			}
 
-			const data = {
-				email: email,
-			};
+			setEmail("");
+			setPassword("");
 
-			const result = await createCurrentUser(data);
-
-			if (result.success) {
-				setEmail("");
-				setPassword("");
-			} else {
-				console.error("Failed to create current User");
-			}
-
+			router.refresh();
 			router.push("/dashboard");
 		} catch (e) {
 			console.error(e);
+		} finally {
+			setLoading(false);
 		}
 	};
 

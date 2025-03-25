@@ -1,6 +1,6 @@
 "use server";
 
-import { database } from "@/app/firebase/config";
+import { database } from "@/lib/firebase/config";
 import { ref, set, push, update } from "firebase/database";
 import { User } from "./users";
 

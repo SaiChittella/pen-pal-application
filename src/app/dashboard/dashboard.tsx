@@ -20,14 +20,14 @@ import {
 } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/app/firebase/config";
+import { auth } from "@/lib/firebase/config";
 import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { User } from "@/app/actions/users";
-import { Match } from "@/app/actions/getMatches";
+import { User } from "@/app/_actions/users";
+import { Match } from "@/app/_actions/getMatches";
 import FindPartners from "@/app/dashboard/partners";
-import { updateUserInDatabase } from "../actions/auth";
+import { updateUserInDatabase } from "../_actions/auth";
 import { ChevronUp } from "lucide-react";
 
 interface DashboardUIProps {
@@ -61,7 +61,6 @@ export default function DashboardUI({
 
 	const [searchQuery, setSearchQuery] = useState("");
 
-
 	const handleUpdates = async () => {
 		const result = await updateUserInDatabase(
 			currentUser,
@@ -81,19 +80,13 @@ export default function DashboardUI({
 	};
 
 	useEffect(() => {
-		if (!user) {
-			router.push("/login");
-		}
-	}, [user, router]);
-
-	useEffect(() => {
-		if (users && user) {
+		if (user && users) {
 			const currentUserData = users.find((u) => u.email === user.email);
 			if (currentUserData) {
 				setCurrentUser(currentUserData);
 			}
 		}
-	}, [users, user]);
+	}, [user, users]);
 
 	const handleFindPartners = () => {
 		setShowNewPartners(true);
@@ -190,7 +183,7 @@ export default function DashboardUI({
 							variant="destructive"
 							onClick={() => {
 								signOut(auth);
-								sessionStorage.removeItem("user");
+								router.push('/login')
 							}}
 						>
 							<p className="Baloo-2">Log out</p>

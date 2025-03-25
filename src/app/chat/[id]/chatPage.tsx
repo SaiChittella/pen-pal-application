@@ -1,29 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mic, Send, MoreVertical } from "lucide-react";
 import Link from "next/link";
-import { Message } from "@/app/actions/getMessages";
-import { User } from "@/app/actions/users";
-import { sendMessage } from "@/app/actions/sendMessage";
+import { Message } from "@/app/_actions/getMessages";
+import { User } from "@/app/_actions/users";
+import { sendMessage } from "@/app/_actions/sendMessage";
+import { ref, onChildAdded } from "firebase/database";
+import { database } from "@/lib/firebase/config";
 
 interface ChatPageProps {
-	messages: Message[];
+	initialMessages: Message[];
 	currentUser: User;
 	receiverUser: User;
 	id: string;
 }
 
 export default function ChatPageUI({
-	messages,
+	initialMessages,
 	currentUser,
 	receiverUser,
 	id,
 }: ChatPageProps) {
 	const [message, setMessage] = useState("");
+	const [messages, setMessages] = useState<Message[]>(initialMessages);
+
+	useEffect(() => {
+		const messagesRef = ref(database, `matches/${id}/messages`);
+
+		const unsubscribe = onChildAdded(messagesRef, (snapshot) => {
+			const newMessage = snapshot.val();
+			setMessages((prevMessages) => [...prevMessages, newMessage]);
+		});
+
+		return () => unsubscribe();
+	}, [id]);
 
 	const handleSubmit = async () => {
 		const result = await sendMessage(
@@ -107,7 +121,6 @@ export default function ChatPageUI({
 										</p>
 									</div>
 								)}
-
 								<p className="text-sm baloo-2">
 									{currentUser.email == message.senderEmail
 										? message.senderTranslation

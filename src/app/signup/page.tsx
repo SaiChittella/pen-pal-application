@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Globe } from "lucide-react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth } from "@/app/firebase/config";
-import { createUserInDatabase } from "@/app/actions/auth";
+import { auth } from "@/lib/firebase/config";
+import { createUserInDatabase } from "@/app/_actions/auth";
 import { useRouter } from "next/navigation";
 import {
 	Select,

@@ -1,5 +1,5 @@
 "use server";
-import { database } from "@/app/firebase/config";
+import { database } from "@/lib/firebase/config";
 import { ref, push, serverTimestamp } from "firebase/database";
 import { revalidatePath } from "next/cache";
 import axios from "axios";
